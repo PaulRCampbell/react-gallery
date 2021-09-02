@@ -11,6 +11,7 @@ const useStorage = (file) => {
   const [url, setUrl] = useState(null);
 
   useEffect(() => {
+    // references
     const storageRef = projectStorage.ref(file.name);
     const collectionRef = projectFirestore.collection("images");
 
@@ -18,7 +19,6 @@ const useStorage = (file) => {
       "state_changed",
       (snap) => {
         let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
-
         setProgress(percentage);
       },
       (err) => {
@@ -27,13 +27,13 @@ const useStorage = (file) => {
       async () => {
         const url = await storageRef.getDownloadURL();
         const createdAt = timestamp();
-        collectionRef.add({ url, createdAt });
+        await collectionRef.add({ url, createdAt });
         setUrl(url);
       }
     );
   }, [file]);
 
-  return { progress, error, url };
+  return { progress, url, error };
 };
 
 export default useStorage;
